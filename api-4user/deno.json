@@ -15,6 +15,6 @@
     "vite": "npm:vite@^5.4.9",
     "vuetify": "npm:vuetify@^3.7.4",
     "vue": "npm:vue@^3.5.12",
-    "vite-plugin-vuetify": "npm:vite-plugin-vuetify@^2.0.4",
+    "vite-plugin-vuetify": "npm:vite-plugin-vuetify@^2.0.4"
   }
 }
