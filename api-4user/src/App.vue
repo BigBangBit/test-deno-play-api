@@ -76,7 +76,7 @@ export default {
     async fetchMessage() {
         if (this.password!=="CUNiX2024") {this.snackbarMessage="wrong password"; this.snackbar=true;return;}
       try {
-        const response = await axios.get("http://localhost:3333/api/getGlobalMsjs");
+        const response = await axios.get("/api/getGlobalMsjs");
         this.message = response.data;
         this.isAuthenticated=true;
       } catch (error) {
@@ -88,7 +88,7 @@ export default {
     async updateMessage() {
       try {
         const response = await axios.post(
-          "http://localhost:3333/api/getGlobalMsjs",
+          "/api/getGlobalMsjs",
           this.message
         );
         console.log("Mensaje actualizado:", response.data);
@@ -101,3 +101,4 @@ export default {
   },
 };
 </script>
+

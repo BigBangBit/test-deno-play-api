@@ -169,6 +169,41 @@ router.post("/api/getGlobalMsjs", async (ctx) => {
     ctx.response.body = "Error interno del servidor";
   }
 });
+///////// frontEnd
+
+// Function to handle all other routes (the catch-all logic)
+const allRoutes = async (ctx: Context) => { // Correct type annotation for ctx
+
+  if (!ctx.request.url.pathname.startsWith("/api/")) { //Check if the path DOES NOT start with /api/
+       const frontendUrl = "http://localhost:3344" + ctx.request.url.pathname + ctx.request.url.search;
+      try {
+        const response = await fetch(frontendUrl);
+        const contentType = response.headers.get("content-type") || "text/html; charset=UTF-8";
+
+        let body;
+        if (contentType.includes("application/json")) {
+          body = await response.json();
+        } else if (contentType.includes("text")) {
+          body = await response.text();
+        } else {
+          body = await response.arrayBuffer();
+        }
+
+        ctx.response.status = response.status;
+        ctx.response.headers.set("Content-Type", contentType);
+        ctx.response.body = body;
+
+      } catch (error) {
+        console.error("Proxy error:", error);
+        ctx.response.status = 500;
+        ctx.response.body = "Proxy error";
+      }
+    }
+
+}
+
+
+router.all("(.*)", allRoutes); // Correct catch-all route definition in Oak
 
 /////////
 app.use(oakCors({
