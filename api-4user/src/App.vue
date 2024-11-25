@@ -12,57 +12,58 @@
             @input="checkAuthentication" 
           ></v-text-field>
 
-          <div v-if="isAuthenticated">
-            <v-btn @click="fetchMessage">
-              Leer Mensaje
-            </v-btn>
-
-            <v-form v-model="valid">
-              <v-textarea
-                v-model="message.msg"
-                label="Mensaje"
-                outlined
-              ></v-textarea>
-
-              <v-switch v-model="message.active" label="Activo"></v-switch>
-              <v-switch v-model="message.stopFlow" label="Detener Flujo"></v-switch>
-
-              <v-btn
-                @click="updateMessage"
-                :disabled="!valid"
-                color="success"
-              >
-                Actualizar Mensaje
-              </v-btn>
-            </v-form>
-          </div> 
-
-          <v-snackbar v-model="snackbar">
-            {{ snackbarMessage }}
-            <template v-slot:action="{ attrs }">
-              <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
-                Close
-              </v-btn>
-            </template>
-          </v-snackbar>
         </v-card-text>
       </v-card>
+      <div v-if="isAuthenticated">
+        <v-container grid-list-lg>
+          <v-row >
+            <v-col cols="12" centered>
+               <MessageUpdater where="Novedades-0" />
+            </v-col> 
+          </v-row>
+          <v-row>
+            <v-col cols="6">
+              <h1>Comprador</h1>
+             <MessageUpdater where="Novedades-1" />
+             <h2>1.1 Certificacion</h2>
+             <MessageUpdater where="Novedades-1.1" />       
+             <h2>1.2 Modalidades de Compra</h2>
+             <MessageUpdater where="Novedades-1.2" />       
+             <h2>1.3 asistencia Técnica</h2>
+             <MessageUpdater where="Novedades-1.3" />       
+             <h2>1.4 Consultas Frecuentes</h2>
+             <MessageUpdater where="Novedades-1.4" />       
+            </v-col>
+            <v-col cols="6">
+              <h1>Proveedor</h1>
+             <MessageUpdater where="Novedades-2" />
+             <h2>2.1 Registro</h2>
+             <MessageUpdater where="Novedades-2.1" />       
+             <h2>2.2 Modalidades de Compra</h2>
+             <MessageUpdater where="Novedades-2.2" />       
+             <h2>2.3 asistencia Técnica</h2>
+             <MessageUpdater where="Novedades-2.3" />       
+             <h2>2.4 Consultas Frecuentes</h2>
+             <MessageUpdater where="Novedades-2.4" />       
+            </v-col>
+          </v-row>
+        </v-container>
+      </div> 
     </v-container>
   </v-app>
 </template>
 
 <script>
 import axios from "axios";
+import MessageUpdater from './MessageUpdater.vue'; // Import the component
 
 export default {
+ components: {
+    MessageUpdater,
+  },  
   data() {
     return {
       password: "",
-      message: {
-        active: false,
-        msg: "",
-        stopFlow: false,
-      },
       valid: true,
       isAuthenticated: false,
       snackbar: false,

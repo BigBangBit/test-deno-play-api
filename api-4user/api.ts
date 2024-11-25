@@ -66,8 +66,8 @@ router.get("/api/user/:rut", async (ctx) => {
 
 ////
 
-router.get("/api/getGlobalMsjs", async (ctx) => {
-  //const rutToSearch = ctx.params.rut;
+router.get("/api/getGlobalMsjs/:where", async (ctx) => {
+  const whereToSearch = ctx.params.where;
 
   try {
     console.log("Mensajes globales");
@@ -85,11 +85,12 @@ router.get("/api/getGlobalMsjs", async (ctx) => {
     console.log(`Usando colección: "GlobalMsjs"`);
 
     // Buscar usuario por RUT
-    const gMsj = await collection.findOne({ });
+    const gMsj = await collection.findOne({"where": whereToSearch });
     console.log("hay msj :", gMsj);
 
     if (gMsj) {
       ctx.response.body = {
+        where: gMsj.where,
         active: gMsj.active,
         msg: gMsj.msg,
         stopFlow: gMsj.stopFlow,
@@ -135,7 +136,7 @@ router.post("/api/getGlobalMsjs", async (ctx) => {
     const collection = db.collection("GlobalMsjs");
 
     // Buscar el primer documento en la colección
-    const mmm = await collection.findOne({});
+    const mmm = await collection.findOne({"where":newMsg.where});
     console.log("Documento encontrado:", mmm);
 
     // Verificamos si el documento existe
@@ -190,6 +191,7 @@ const allRoutes = async (ctx: Context) => { // Correct type annotation for ctx
         }
 
         ctx.response.status = response.status;
+        //ctx.response.headers.removeHeader('X-Frame-Options'); // Elimina encabezados conflictivos
         ctx.response.headers.set("Content-Type", contentType);
         ctx.response.body = body;
 
