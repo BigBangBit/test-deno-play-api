@@ -4,14 +4,15 @@
       <v-card>
         <v-card-title>Editor de Mensaje Global</v-card-title>
         <v-card-text>
+          <div v-if="!isAuthenticated">
           <v-text-field
             v-model="password"
             label="Contraseña"
             type="password"
             prepend-icon="mdi-lock"
-            @input="checkAuthentication" 
+            @input="checkAuthentication"  centered
           ></v-text-field>
-
+          </div>
         </v-card-text>
       </v-card>
       <div v-if="isAuthenticated">
