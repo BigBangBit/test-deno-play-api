@@ -2,27 +2,18 @@
   <v-card>
     <v-card-title>Actualizar Mensaje ({{ where }})</v-card-title>
     <v-card-text>
-
       <v-btn :loading="loading" @click="fetchMessage">
         <v-icon v-if="loading">mdi-loading</v-icon>
         Leer Mensaje
       </v-btn>
 
       <v-form>
-        <v-textarea
-          v-model="message.msg"
-          label="Mensaje"
-          outlined
-        ></v-textarea>
+        <v-textarea v-model="message.msg" label="Mensaje" outlined></v-textarea>
 
         <v-switch v-model="message.active" label="Activo"></v-switch>
         <v-switch v-model="message.stopFlow" label="Detener Flujo"></v-switch>
 
-        <v-btn
-          :disabled="loading"
-          @click="updateMessage"
-          color="success"
-        >
+        <v-btn :disabled="loading" @click="updateMessage" color="success">
           Actualizar Mensaje
         </v-btn>
       </v-form>
@@ -56,11 +47,11 @@ export default {
         active: false,
         msg: "",
         stopFlow: false,
-        where: this.where // Initialize with prop value
+        where: this.where, // Initialize with prop value
       },
       loading: false,
       snackbar: false,
-      snackbarMessage: ''
+      snackbarMessage: "",
     };
   },
   mounted() {

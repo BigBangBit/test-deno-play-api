@@ -1,4 +1,4 @@
-import { Application, Router } from  "https://deno.land/x/oak@v12.4.0/mod.ts" ; //"https://deno.land/x/oak/mod.ts";
+import { Application, Router, Context } from  "https://deno.land/x/oak@v12.4.0/mod.ts" ; //"https://deno.land/x/oak/mod.ts";
 import { MongoClient, ObjectId } from "https://deno.land/x/mongo@v0.31.1/mod.ts";
 // Importa oak_cors en lugar de cors
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
@@ -172,12 +172,93 @@ router.post("/api/getGlobalMsjs", async (ctx) => {
 });
 ///////// frontEnd
 
+
+// api.ts (server-side code)
+//import { Application, Router, Context } from "https://deno.land/x/oak@v12.4.0/mod.ts";
+// ... other imports
+
+router.post("/api/uploadRuts", async (ctx) => {
+    try {
+        const body = ctx.request.body({ type: "form-data" });
+        const formData = await body.value.read();
+        const fileContent = await Deno.readTextFile(formData.files[0].filename);
+
+        const lines = fileContent.trim().split('\n');
+        const headers = lines[0].split(',');
+        const data = lines.slice(1).map(line => {
+            const values = line.split(',');
+            return headers.reduce((obj, header, index) => {
+                obj[header.trim()] = values[index].trim();
+                return obj;
+            }, {});
+        });
+
+
+        const client = new MongoClient();
+        await client.connect(mongoURL);
+        const db = client.database(dbName);
+        const collection = db.collection(collectionName);
+
+
+        let insertedCount = 0;
+        let updatedCount = 0;
+
+         const results = await Promise.all(data.map(async item => {
+                const rut = item.RUT_ideal
+          const existingUser = await collection.findOne({ RUT_ideal: rut });
+
+            if (existingUser) {
+               const updateResult = await collection.updateOne({ RUT_ideal: rut }, { $set: item });
+               if (updateResult.modifiedCount === 1) {
+                    return "updated"; 
+                } else{
+                    console.error("Error updating user:", updateResult);
+                }
+            } else {
+              const insertResult = await collection.insertOne(item);
+              if (insertResult) {
+                return "inserted"
+              } else {
+                 console.error("Error inserting user:", insertResult);
+              }
+            }
+        }));
+
+
+        insertedCount = results.filter(result => result === 'inserted').length;
+        updatedCount = results.filter(result => result === 'updated').length;
+
+
+
+        client.close();
+        ctx.response.body = { insertedCount, updatedCount };
+
+
+    } catch (error) {
+        console.error("Error uploading RUTs:", error);
+        ctx.response.status = 500;
+        ctx.response.body = "Error interno del servidor";
+    }
+
+});
+
+
+// ... other code
+
+
+
+
+
+
+
+
 // Function to handle all other routes (the catch-all logic)
 const allRoutes = async (ctx: Context) => { // Correct type annotation for ctx
 
   if (!ctx.request.url.pathname.startsWith("/api/")) { //Check if the path DOES NOT start with /api/
-       const frontendUrl = "http://localhost:3344" + ctx.request.url.pathname + ctx.request.url.search;
-      try {
+//dev    const frontendUrl = "http://localhost:3344" + ctx.request.url.pathname + ctx.request.url.search;
+    const frontendUrl = "http://localhost:8000" + ctx.request.url.pathname + ctx.request.url.search;
+    try {
         const response = await fetch(frontendUrl);
         const contentType = response.headers.get("content-type") || "text/html; charset=UTF-8";
 
